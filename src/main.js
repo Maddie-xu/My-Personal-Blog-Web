@@ -8,7 +8,7 @@ import './plugins/element.js'
 
 Vue.use(VueAxios, axios)
 Vue.config.productionTip = false
-
+axios.defaults.withCredentials = true // 让ajax携带cookie
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title

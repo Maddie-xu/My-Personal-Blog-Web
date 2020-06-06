@@ -5,8 +5,8 @@
       <input type="file" id="files" ref="refFile" style="display: none" @change="fileLoad">
     </div>
     <div style="text-align: center;">
-      <div class="content">
-        <span>{{content}}</span>
+      <div class="textcontent" style="overflow-y: auto;">
+        <span>{{textcontent}}</span>
       </div>
     </div>
     <div style="text-align: center; ">
@@ -27,7 +27,19 @@
         <span>图片 </span>
         <el-input class="input" v-model="imgUrl" placeholder="请输入图片地址"></el-input>
       </p>
-      <el-button type="primary" >上传博客</el-button>
+      <p>
+        <span style="vertical-align: middle;">简介 </span>
+        <el-input
+          type="textarea"
+          :rows="3"
+          placeholder="请输入博客简介"
+          v-model="content"
+          class="input"
+          style="vertical-align: middle;">
+        </el-input>
+      </p>
+      <input @keyup.enter="upload">
+      <el-button type="primary" @keyup.enter="upload">上传博客</el-button>
       </div>
       <img :src=imgUrl>
     </div>
@@ -36,16 +48,12 @@
 
 <script>
 import axios from 'axios'
-import statcidata from '../statcidata'
+// import statcidata from '../statcidata'
 export default {
   beforeRouteEnter (to, from, next) {
     axios({
       method: 'post',
-      url: 'http://localhost:8081/login',
-      params: {
-        username: statcidata.username,
-        password: statcidata.password
-      }
+      url: 'http://localhost:8081/getSession'
     }).then(function (response) {
       if (response.data === 'ok') {
         next()
@@ -57,10 +65,11 @@ export default {
   },
   data () {
     return {
-      content: '请上传类容',
+      textcontent: '请上传类容',
       classify: '',
       title: '',
-      imgUrl: ''
+      imgUrl: '',
+      content: ''
     }
   },
   computed: {
@@ -84,12 +93,28 @@ export default {
       reader.readAsText(selectedFile)
       const _this = this
       reader.onload = function (result) {
-        _this.content = result.target.result
-        console.log(_this.content)
+        _this.textcontent = result.target.result
       }
+    },
+    upload () {
+      this.axios({
+        method: 'post',
+        url: 'http://localhost:8081/addBlog',
+        params: {
+          blog: this.textcontent,
+          classify: this.classify,
+          title: this.title,
+          time: this.time,
+          img: this.imgUrl,
+          content: this.content
+        }
+      }).then((response) => {
+        console.log(response.data)
+      })
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -103,7 +128,6 @@ p {
 .inputs {
   display: inline-block;
   width: 900px;
-  height: 400px;
 }
 .input {
   width: 400px;
@@ -111,7 +135,7 @@ p {
 .updata {
   text-align: center;
 }
-.content {
+.textcontent {
   width: 900px;
   height: 400px;
   display: inline-block;

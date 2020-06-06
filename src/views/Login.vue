@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import statcidata from '../statcidata'
 export default {
   data () {
     return {
@@ -37,14 +36,41 @@ export default {
   },
   methods: {
     submitForm (formName) {
-      statcidata.username = formName.name
-      statcidata.password = formName.password
-      this.$router.push(
-        {
-          path: '/Backstage'
+      const _this = this
+      _this.axios({
+        method: 'post',
+        url: 'http://localhost:8081/login',
+        params: {
+          username: this.ruleForm.name,
+          password: this.ruleForm.password
         }
-      )
+      }).then((response) => {
+        if (response.data.result === 'ok') {
+          _this.$router.push(
+            {
+              path: '/Backstage'
+            }
+          )
+        } else {
+          alert('登录失败')
+        }
+      })
     }
+  },
+  mounted () {
+    const _this = this
+    _this.axios({
+      method: 'post',
+      url: 'http://localhost:8081/getSession'
+    }).then(function (response) {
+      if (response.data === 'ok') {
+        _this.$router.push(
+          {
+            path: '/Backstage'
+          }
+        )
+      }
+    })
   }
 }
 </script>

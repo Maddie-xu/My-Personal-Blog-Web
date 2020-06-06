@@ -16,11 +16,14 @@ export default {
     }
   },
   mounted () {
+    var blogId = this.$route.query.id
     this.axios({
-      methods: 'get',
-      url: 'http://localhost:8081/test'
+      method: 'post',
+      url: 'http://localhost:8081/getBlog',
+      params: {
+        id: blogId
+      }
     }).then((response) => {
-      console.log(response.data)
       this.data = response.data
     })
   }

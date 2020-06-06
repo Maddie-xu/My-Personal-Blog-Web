@@ -26,6 +26,7 @@ const router = new VueRouter({
         {
           path: 'Blog',
           component: Blog,
+          name: Blog,
           meta: {
             title: '博客详情'
           }
